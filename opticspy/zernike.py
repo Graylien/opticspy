@@ -29,6 +29,7 @@ class Coefficient(object):
     Return a set of Zernike Polynomials Coefficient
     """
     __coefficients__ = []
+    # Noll indexed coefficients
     __zernikelist__ = ["Z00 Piston or Bias",
                        "Z11 x Tilt",
                        "Z11 y Tilt",
@@ -250,10 +251,7 @@ class Coefficient(object):
         # __plt__.show()
 
         abbe = __np__.exp(-1j * 2 * __np__.pi * A)
-        for i in range(len(abbe)):
-            for j in range(len(abbe)):
-                if abbe[i][j] == 1:
-                    abbe[i][j] = 0
+        abbe[abbe[i][j] == 1] = 0
         PSF = __fftshift__(__fft2__(__fftshift__(abbe))) ** 2
         PSF = PSF / PSF.max()
         return PSF
@@ -281,12 +279,12 @@ class Coefficient(object):
         __plt__.imshow(abs(PSF), cmap=__cm__.RdYlGn)
         __plt__.colorbar()
         __plt__.show()
-        return 0
+        return PSF
 
     def otf(self, r=1, lambda_1=632 * 10 ** (-9), z=0.1):
         PSF = self.__psfcaculator__(r=r, lambda_1=lambda_1, z=z)
         OTF = __fftshift__(__fft2__(PSF))
-        return 0
+        return OTF
 
     def mtf(self, r=1, lambda_1=632 * 10 ** (-9), z=0.1, matrix=False):
         """
@@ -418,7 +416,7 @@ def fitting(Z, n, remain3D=False, remain2D=False, barchart=False, interferogram=
 
     n: How many order of Zernike Polynomials you want to fit
 
-    reamin(default==Flase): show the surface after remove fitting
+    remain(default==False): show the surface after remove fitting
     aberrations.
 
     removepiston: if remove piston, default = True
