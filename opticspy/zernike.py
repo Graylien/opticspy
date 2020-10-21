@@ -251,7 +251,7 @@ class Coefficient(object):
         # __plt__.show()
 
         abbe = __np__.exp(-1j * 2 * __np__.pi * A)
-        abbe[abbe[i][j] == 1] = 0
+        abbe[abbe == 1] = 0
         PSF = __fftshift__(__fft2__(__fftshift__(abbe))) ** 2
         PSF = PSF / PSF.max()
         return PSF
