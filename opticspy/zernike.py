@@ -16,6 +16,7 @@ from numpy.fft import fft2 as __fft2__
 from numpy.linalg import inv
 from numpy.fft import ifft2 as __ifft2__
 import operator as op
+from functools import reduce
 
 from . import interferometer_zenike as __interferometer__
 from . import seidel2 as __seidel2__
@@ -553,12 +554,12 @@ def transform(zernikes, tx, ty, thetaR, scaling=1.0):
     R = __np__.zeros(jmaxTuple)
     CC1 = __np__.zeros((jmax + 1, 1), dtype=__np__.complex)
     counter = 0
-    for m in xrange(-nmax, nmax + 1):
-        for n in xrange(__np__.abs(m), nmax + 1, 2):
+    for m in range(-nmax, nmax + 1):
+        for n in range(__np__.abs(m), nmax + 1, 2):
             jnm = (m + n * (n + 2)) / 2
             P[counter, jnm] = 1
             N[counter, counter] = __np__.sqrt(n + 1)
-            for s in xrange(0, int((n - abs(m)) / 2 + 1)):
+            for s in range(0, int((n - abs(m)) / 2 + 1)):
                 R[counter - s, counter] = math.pow((-1), s) * math.factorial(n - s) / (
                         math.factorial(s) * math.factorial((n + m) / 2 - s) * math.factorial((n - m) / 2 - s))
             if m < 0:
@@ -570,8 +571,8 @@ def transform(zernikes, tx, ty, thetaR, scaling=1.0):
             counter += 1
 
     ETA = None
-    for m in xrange(-nmax, nmax + 1):
-        for n in xrange(abs(m), nmax + 1, 2):
+    for m in range(-nmax, nmax + 1):
+        for n in range(abs(m), nmax + 1, 2):
             transd = _transformMatrix(n, m, jmax, etaS, etaT, thetaT, thetaR)
             if ETA is None:
                 ETA = __np__.matmul(P, transd)
@@ -581,8 +582,8 @@ def transform(zernikes, tx, ty, thetaR, scaling=1.0):
     C = __np__.matmul(__np__.matmul(__np__.matmul(__np__.matmul(__np__.matmul(__np__.matmul(inv(P), inv(N)), inv(R)), ETA), R), N), P)
     CC2 = __np__.matmul(C, CC1)
     C2 = __np__.zeros((jmax + 1, 1))
-    for m in xrange(-nmax, nmax + 1):
-        for n in xrange(abs(m), nmax + 1, 2):
+    for m in range(-nmax, nmax + 1):
+        for n in range(abs(m), nmax + 1, 2):
             jnm = (m + n * (n + 2)) / 2
             if m < 0:
                 C2[jnm] = __np__.imag(CC2[jnm] - CC2[(-m + n * (n + 2)) / 2]) / __np__.sqrt(2)
@@ -596,8 +597,8 @@ def transform(zernikes, tx, ty, thetaR, scaling=1.0):
 
 def _transformMatrix(n, m, jmax, etaS, etaT, thetaT, thetaR):
     Eta = __np__.zeros((jmax + 1, 1), dtype=__np__.complex)
-    for p in xrange(0, int((n + m) / 2 + 1)):
-        for q in xrange(0, int((n - m) / 2 + 1)):
+    for p in range(0, int((n + m) / 2 + 1)):
+        for q in range(0, int((n - m) / 2 + 1)):
             nnew = n - p - q
             mnew = m - p + q
             jnm = (mnew + nnew * (nnew + 2)) / 2
@@ -610,6 +611,6 @@ def _transformMatrix(n, m, jmax, etaS, etaT, thetaT, thetaR):
 def _ncr(n, r):
     r = min(r, n - r)
     if r == 0: return 1
-    numer = reduce(op.mul, xrange(n, n - r, -1))
-    denom = reduce(op.mul, xrange(1, r + 1))
+    numer = reduce(op.mul, range(n, n - r, -1))
+    denom = reduce(op.mul, range(1, r + 1))
     return numer // denom
