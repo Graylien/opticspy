@@ -4,7 +4,7 @@
 ## To test
 * mkdir /tmp/github/
 * cd /tmp/github/
-* git clone https://github.com/Diti24/opticspy.git
+* git clone https://github.com/Graylien/opticspy.git
 * Add codebase to python path: ```pip install -e opticspy```
 * from opticspy.ray_tracing import *
 The basics is working...
